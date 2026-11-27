@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IBNP-DB | Industrial Bacterial Natural Products Database (N = 140)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-teal-700 text-white flex items-center justify-center font-bold text-sm">IBNP</div>
+        <div>
+          <span class="font-bold text-slate-900 text-base">IBNP-DB</span>
+          <span class="hidden sm:inline-block ml-2 text-xs font-medium px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200">Tier B Gold Standard (N = 140)</span>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <a href="IBNP_TierB_140_Gold_Standard_FINAL.tsv" download class="text-xs font-medium px-3 py-1.5 rounded-md bg-teal-700 hover:bg-teal-800 text-white transition shadow-sm">
+          Download Gold Standard TSV (n=140)
+        </a>
+        <a href="IBNP_TierB_Full_Curation_Audit.tsv" download class="text-xs font-medium px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition">
+          Full Curation Audit TSV (n=213)
+        </a>
+        <button onclick="exportFilteredJSON()" class="text-xs font-medium px-3 py-1.5 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 transition">
+          Export Filtered JSON
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & KPIs -->
+  <section class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 text-white py-10 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-700/60 text-teal-300 text-xs font-medium mb-3">
+          <span>ECO:0000269 Primary-Literature Verified</span>
+          <span>•</span>
+          <span>MIxS &amp; ENVO Compliant</span>
+          <span>•</span>
+          <span>Oct 2026 USD</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">Industrial Bacterial Natural Products Database</h1>
+        <p class="mt-2.5 text-slate-300 text-sm sm:text-base leading-relaxed">
+          Linking <strong class="text-white">140 commercialized bacterial natural products and biocatalysts</strong> across six industrial sectors to literature-verified wild-type strains, ISO 3166-1 sampling origins (31 countries), commercializing R&amp;D jurisdictions (14 countries), and ENVO ecological biomes.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-7">
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tier B Gold Standard</div>
+          <div class="mt-1.5 text-3xl font-bold text-white">140</div>
+          <p class="mt-1 text-xs text-slate-400">Verified commercial products (213 audited; 73 excluded)</p>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Cross-Border Transfers</div>
+          <div class="mt-1.5 text-3xl font-bold text-amber-400">19.3%</div>
+          <p class="mt-1 text-xs text-slate-400">27/140 strains (24 source → 10 R&amp;D nations; 31 total sampled)</p>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Modeled 20-Yr Gross</div>
+          <div class="mt-1.5 text-3xl font-bold text-emerald-400">$474.37B</div>
+          <p class="mt-1 text-xs text-slate-400">$139.72B (29.5%) abroad; 100% pre-1993 CBD transfers</p>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Median Translation Lag</div>
+          <div class="mt-1.5 text-3xl font-bold text-sky-400">7.0 yrs</div>
+          <p class="mt-1 text-xs text-slate-400">IQR 3.0–18.8 yrs (n = 122 dated isolation-launch pairs)</p>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Niche Partitioning</div>
+          <div class="mt-1.5 text-2xl font-bold text-teal-300">p = 1.5e-5</div>
+          <p class="mt-1 text-xs text-slate-400">χ² = 73.76 (df = 30) across 7 ENVO biomes × 6 sectors</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Interactive Charts -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">Top 10 Cross-Border Source Countries</h2>
+        <p class="text-xs text-slate-500 mb-3">Modeled 20-year revenue generated abroad (Oct 2026 USD, $B)</p>
+        <div class="h-60"><canvas id="countryChart"></canvas></div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">Industrial Sectors (N = 140)</h2>
+        <p class="text-xs text-slate-500 mb-3">Verified commercial products by sector</p>
+        <div class="h-60"><canvas id="sectorChart"></canvas></div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h2 class="text-sm font-semibold text-slate-900">Cross-Repository Metadata Coverage</h2>
+        <p class="text-xs text-slate-500 mb-3">Percentage of N = 140 strains linked across archives</p>
+        <div class="h-60"><canvas id="repoChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Full Interactive Table (Parses TSV files directly) -->
+    <section class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+      <div class="p-5 border-b border-slate-200 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Browse &amp; Search Records</h2>
+            <p class="text-xs text-slate-500">Directly reads <code class="mono">IBNP_TierB_140_Gold_Standard_FINAL.tsv</code> and <code class="mono">IBNP_TierB_Full_Curation_Audit.tsv</code>. Click any row for <code class="mono">ECO:0000269</code> verbatim quote.</p>
+          </div>
+          <span id="statusBadge" class="text-xs font-medium px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200">Loading TSV datasets...</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <input id="searchInput" type="text" placeholder="Search product, organism, strain, DOI..." oninput="applyFilters()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-600" />
+          <select id="sectorFilter" onchange="applyFilters()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white">
+            <option value="ALL">All Sectors (6)</option>
+          </select>
+          <select id="biomeFilter" onchange="applyFilters()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white">
+            <option value="ALL">All ENVO Biomes (7)</option>
+          </select>
+          <select id="countryFilter" onchange="applyFilters()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white">
+            <option value="ALL">All Sampling Countries (31)</option>
+          </select>
+          <select id="curationFilter" onchange="applyFilters()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg bg-white">
+            <option value="VERIFIED">VERIFIED Gold Standard (140)</option>
+            <option value="ALL">All Audited Candidates (213)</option>
+            <option value="EXCLUDED">Excluded Candidates Only (73)</option>
+          </select>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <label class="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+            <input id="crossBorderOnly" type="checkbox" onchange="applyFilters()" class="rounded border-slate-300 text-teal-700 focus:ring-teal-600" />
+            <span>Cross-border transfers only (Sampling Country ≠ R&amp;D Country)</span>
+          </label>
+          <div class="flex items-center gap-3">
+            <button onclick="resetFilters()" class="text-xs px-2.5 py-1 rounded border border-slate-300 hover:bg-slate-100 text-slate-700">Reset Filters</button>
+            <span id="recordCountLabel" class="text-xs font-semibold text-slate-700">Showing 140 records</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto max-h-[560px]">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="sticky top-0 bg-slate-50 border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-600">
+            <tr>
+              <th class="py-2.5 px-3">ID</th>
+              <th class="py-2.5 px-3">Canonical Name</th>
+              <th class="py-2.5 px-3">Producer Organism &amp; Strain</th>
+              <th class="py-2.5 px-3">Sector</th>
+              <th class="py-2.5 px-3">Origin → R&amp;D</th>
+              <th class="py-2.5 px-3">Iso / Launch</th>
+              <th class="py-2.5 px-3">ENVO Biome</th>
+              <th class="py-2.5 px-3 text-right">20-Yr Rev ($B)</th>
+              <th class="py-2.5 px-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-2xl w-full border border-slate-200 shadow-xl overflow-hidden">
+      <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div>
+          <span id="mId" class="mono text-xs text-teal-300"></span>
+          <h3 id="mTitle" class="text-base font-bold"></h3>
+        </div>
+        <button onclick="document.getElementById('detailModal').classList.add('hidden')" class="text-slate-400 hover:text-white text-xl">&times;</button>
+      </div>
+      <div id="mBody" class="p-5 space-y-3 text-xs text-slate-700"></div>
+    </div>
+  </div>
+
+  <script>
+    let allAuditRecords = [];
+    let goldRevMap = {};
+    let currentFiltered = [];
+
+    function parseTSV(text) {
+      const lines = text.trim().split(/?
+/);
+      const headers = lines[0].split('	');
+      return lines.slice(1).map(line => {
+        const cols = line.split('	');
+        const obj = {};
+        headers.forEach((h, i) => { obj[h.trim()] = (cols[i] || '').trim(); });
+        return obj;
+      });
+    }
+
+    async function loadDatasets() {
+      try {
+        const [goldResp, auditResp] = await Promise.all([
+          fetch('IBNP_TierB_140_Gold_Standard_FINAL.tsv'),
+          fetch('IBNP_TierB_Full_Curation_Audit.tsv')
+        ]);
+        const goldRows = parseTSV(await goldResp.text());
+        const auditRows = parseTSV(await auditResp.text());
+
+        goldRows.forEach(r => {
+          goldRevMap[r.ibnp_candidate_id] = {
+            rev20: r.commercializing_country_rev_20yr_usd_b,
+            ben20: r.isolation_country_benefit_20yr_usd_b
+          };
+        });
+
+        allAuditRecords = auditRows.map(r => ({
+          ...r,
+          rev20: (goldRevMap[r.ibnp_candidate_id] || {}).rev20 || ''
+        }));
+
+        populateDropdowns();
+        applyFilters();
+        document.getElementById('statusBadge').textContent = `Loaded ${goldRows.length} Verified / ${auditRows.length} Audited`;
+      } catch (err) {
+        document.getElementById('statusBadge').textContent = 'Serve via HTTP/GitHub Pages to load TSVs';
+        console.error(err);
+      }
+    }
+
+    function populateDropdowns() {
+      const verified = allAuditRecords.filter(r => r.curator_status === 'VERIFIED');
+      const sectors = [...new Set(verified.map(r => r.industrial_sector).filter(Boolean))].sort();
+      const biomes = [...new Set(verified.map(r => r.envo_biome_id).filter(Boolean))].sort();
+      const countries = [...new Set(verified.map(r => r.isolation_country_iso3).filter(Boolean))].sort();
+
+      const sSel = document.getElementById('sectorFilter');
+      sectors.forEach(s => sSel.insertAdjacentHTML('beforeend', `<option value="${s}">${s}</option>`));
+
+      const bSel = document.getElementById('biomeFilter');
+      biomes.forEach(b => bSel.insertAdjacentHTML('beforeend', `<option value="${b}">${b}</option>`));
+
+      const cSel = document.getElementById('countryFilter');
+      countries.forEach(c => cSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const sec = document.getElementById('sectorFilter').value;
+      const bio = document.getElementById('biomeFilter').value;
+      const cty = document.getElementById('countryFilter').value;
+      const cur = document.getElementById('curationFilter').value;
+      const cbOnly = document.getElementById('crossBorderOnly').checked;
+
+      currentFiltered = allAuditRecords.filter(r => {
+        if (cur === 'VERIFIED' && r.curator_status !== 'VERIFIED') return false;
+        if (cur === 'EXCLUDED' && r.curator_status === 'VERIFIED') return false;
+        if (sec !== 'ALL' && r.industrial_sector !== sec) return false;
+        if (bio !== 'ALL' && r.envo_biome_id !== bio) return false;
+        if (cty !== 'ALL' && r.isolation_country_iso3 !== cty) return false;
+        if (cbOnly && (!r.isolation_country_iso3 || !r.discovering_org_country || r.isolation_country_iso3 === r.discovering_org_country)) return false;
+        if (q) {
+          const hay = `${r.ibnp_candidate_id} ${r.canonical_name} ${r.organism_name} ${r.strain_designation} ${r.isolation_locality} ${r.primary_doi} ${r.verbatim_evidence_quote}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = currentFiltered.map((r, idx) => {
+        const isCB = r.isolation_country_iso3 && r.discovering_org_country && r.isolation_country_iso3 !== r.discovering_org_country;
+        const revDisplay = r.rev20 ? `$${parseFloat(r.rev20).toFixed(2)}B` : '—';
+        return `
+          <tr onclick="showDetail(${idx})" class="hover:bg-teal-50/50 cursor-pointer">
+            <td class="py-2 px-3 mono text-[11px] text-slate-600">${r.ibnp_candidate_id}</td>
+            <td class="py-2 px-3 font-semibold text-slate-900">${r.canonical_name}</td>
+            <td class="py-2 px-3"><span class="italic">${r.organism_name}</span> <span class="mono text-[11px] text-slate-500">${r.strain_designation}</span></td>
+            <td class="py-2 px-3">${r.industrial_sector}</td>
+            <td class="py-2 px-3">
+              <span class="px-1.5 py-0.5 rounded border text-[11px] ${isCB ? 'bg-amber-50 text-amber-800 border-amber-200 font-medium' : 'bg-slate-100 text-slate-700 border-slate-200'}">
+                ${r.isolation_country_iso3 || '?'} → ${r.discovering_org_country || '?'}
+              </span>
+            </td>
+            <td class="py-2 px-3 mono text-[11px]">${r.first_isolation_year || '—'} / ${r.commercialization_year || '—'}</td>
+            <td class="py-2 px-3 mono text-[11px] text-teal-800">${r.envo_biome_id || '—'}</td>
+            <td class="py-2 px-3 text-right font-semibold">${revDisplay}</td>
+            <td class="py-2 px-3"><span class="px-1.5 py-0.5 rounded text-[10px] font-medium ${r.curator_status === 'VERIFIED' ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'}">${r.curator_status}</span></td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('recordCountLabel').textContent = `Showing ${currentFiltered.length} records`;
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('sectorFilter').value = 'ALL';
+      document.getElementById('biomeFilter').value = 'ALL';
+      document.getElementById('countryFilter').value = 'ALL';
+      document.getElementById('curationFilter').value = 'VERIFIED';
+      document.getElementById('crossBorderOnly').checked = false;
+      applyFilters();
+    }
+
+    function showDetail(idx) {
+      const r = currentFiltered[idx];
+      if (!r) return;
+      document.getElementById('mId').textContent = `${r.ibnp_candidate_id} • ${r.curator_status}`;
+      document.getElementById('mTitle').textContent = r.canonical_name;
+      document.getElementById('mBody').innerHTML = `
+        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+          <div><strong class="block text-slate-500">Organism &amp; Strain</strong><span class="italic">${r.organism_name}</span> ${r.strain_designation}</div>
+          <div><strong class="block text-slate-500">Culture Collections</strong><span class="mono">${r.culture_collection_ids || '—'}</span></div>
+          <div><strong class="block text-slate-500">Origin → R&amp;D</strong>${r.isolation_country_iso3 || '—'} (${r.isolation_locality || '—'}) → ${r.discovering_org_country || '—'}</div>
+          <div><strong class="block text-slate-500">ENVO &amp; Primary DOI</strong><span class="mono">${r.envo_biome_id || '—'}</span> • ${r.primary_doi || '—'}</div>
+        </div>
+        <div>
+          <strong class="block text-slate-500 uppercase tracking-wider mb-1">ECO:0000269 Verbatim Evidence Quote</strong>
+          <div class="p-3 rounded-lg bg-amber-50/70 border border-amber-200 leading-relaxed">${r.verbatim_evidence_quote || 'No verbatim quote recorded.'}</div>
+        </div>
+      `;
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function exportFilteredJSON() {
+      const blob = new Blob([JSON.stringify(currentFiltered, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'IBNP_DB_Filtered_Export.json';
+      a.click();
+    }
+
+    // Charts
+    new Chart(document.getElementById('countryChart'), {
+      type: 'bar',
+      data: {
+        labels: ['COL', 'VEN', 'TUR', 'CHL', 'KEN', 'THA', 'PHL', 'FRA', 'MEX', 'DEU'],
+        datasets: [{ data: [27.6, 14.6, 14.2, 10.5, 10.2, 9.2, 8.8, 7.8, 6.1, 4.8], backgroundColor: '#0f766e', borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { callback: v => '$' + v + 'B', font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
+    });
+
+    new Chart(document.getElementById('sectorChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Pharma', 'Enzymes', 'Agrochem', 'Polymers', 'Pigments', 'Surfactants'],
+        datasets: [{ data: [60, 29, 21, 12, 9, 9], backgroundColor: ['#0f766e', '#0284c7', '#d97706', '#4f46e5', '#db2777', '#059669'], borderRadius: 4 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } } }
+    });
+
+    new Chart(document.getElementById('repoChart'), {
+      type: 'bar',
+      data: {
+        labels: ['IBNP-DB', 'Collections', 'BacDive', 'ChEMBL/UniProt', 'NPAtlas 3.0', 'InChIKey', 'NCBI TaxID', 'MIBiG 4.0'],
+        datasets: [{ data: [100.0, 95.7, 73.6, 71.4, 59.3, 59.3, 48.6, 42.1], backgroundColor: '#0284c7', borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { max: 100, ticks: { callback: v => v + '%', font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
+    });
+
+    loadDatasets();
+  </script>
+</body>
+</html>
